@@ -271,6 +271,7 @@ module "alb" {
       target_type                   = "instance"
       deregistration_delay          = 30
       load_balancing_algorithm_type = "round_robin"
+      create_attachment             = false # Disable module's built-in attachments
 
       # Health check configuration
       health_check = {
@@ -284,20 +285,24 @@ module "alb" {
         timeout             = 5
         unhealthy_threshold = 2
       }
-
-      # Register EC2 instances
-      targets = {
-        instance_az_a = {
-          target_id = module.ec2_instance_az_a.id
-          port      = 80
-        }
-        instance_az_b = {
-          target_id = module.ec2_instance_az_b.id
-          port      = 80
-        }
-      }
     }
   }
 
   tags = local.common_tags
+}
+
+# =============================================================================
+# Target Group Attachments - Register EC2 instances with ALB target group
+# =============================================================================
+
+resource "aws_lb_target_group_attachment" "instance_az_a" {
+  target_group_arn = module.alb.target_groups["ec2_targets"].arn
+  target_id        = module.ec2_instance_az_a.id
+  port             = 80
+}
+
+resource "aws_lb_target_group_attachment" "instance_az_b" {
+  target_group_arn = module.alb.target_groups["ec2_targets"].arn
+  target_id        = module.ec2_instance_az_b.id
+  port             = 80
 }
