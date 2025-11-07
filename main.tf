@@ -132,7 +132,6 @@ module "ec2_instance_az_a" {
 
   # Network placement
   subnet_id                   = element(data.aws_subnets.default.ids, 0)
-  availability_zone           = var.availability_zones[0]
   vpc_security_group_ids      = [module.ec2_security_group.security_group_id]
   associate_public_ip_address = true
 
@@ -178,7 +177,6 @@ module "ec2_instance_az_b" {
 
   # Network placement
   subnet_id                   = element(data.aws_subnets.default.ids, 1)
-  availability_zone           = var.availability_zones[1]
   vpc_security_group_ids      = [module.ec2_security_group.security_group_id]
   associate_public_ip_address = true
 
