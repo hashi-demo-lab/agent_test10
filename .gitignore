@@ -8,8 +8,7 @@
 # Crash log files
 crash.log
 
-# Exclude override files
-override.tf
+# Exclude override files (except override.tf for cloud backend testing)
 override.tf.json
 *_override.tf
 *_override.tf.json

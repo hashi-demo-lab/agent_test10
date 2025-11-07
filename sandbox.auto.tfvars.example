@@ -1,0 +1,26 @@
+# Example variable values for sandbox testing
+# Copy this file to sandbox.auto.tfvars and update with actual values
+
+# AWS Region
+region = "ap-southeast-2"
+
+# Environment
+environment = "development"
+
+# EC2 Instance Configuration
+instance_type = "t3.micro" # Or "t4g.micro" for 20% cost savings with Graviton
+
+# ACM Certificate ARN (REQUIRED - Replace with your certificate ARN)
+# Create certificate via: aws acm request-certificate --domain-name "*.example.com" --validation-method DNS --region ap-southeast-2
+certificate_arn = "arn:aws:acm:ap-southeast-2:ACCOUNT_ID:certificate/CERTIFICATE_ID"
+
+# Availability Zones for Multi-AZ Deployment
+availability_zones = ["ap-southeast-2a", "ap-southeast-2b"]
+
+# Common Tags
+common_tags = {
+  ManagedBy   = "Terraform"
+  Application = "ec2-alb-nginx"
+  Owner       = "your-email@example.com"
+  CostCenter  = "Engineering"
+}
