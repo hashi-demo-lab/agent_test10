@@ -76,11 +76,28 @@ output "iam_role_arn_az_b" {
   value       = module.ec2_instance_az_b.iam_role_arn
 }
 
-# Certificate output
+# Certificate outputs
 output "certificate_arn" {
   description = "ACM certificate ARN used for HTTPS listener"
-  value       = var.certificate_arn
+  value       = local.certificate_arn
   sensitive   = false
+}
+
+output "certificate_dns_validation_records" {
+  description = "DNS validation records for ACM certificate. Add these to your DNS provider to complete validation."
+  value = var.create_certificate ? [
+    for dvo in aws_acm_certificate.this[0].domain_validation_options : {
+      name   = dvo.resource_record_name
+      type   = dvo.resource_record_type
+      value  = dvo.resource_record_value
+      domain = dvo.domain_name
+    }
+  ] : []
+}
+
+output "certificate_status" {
+  description = "Status of the ACM certificate (PENDING_VALIDATION, ISSUED, etc.)"
+  value       = var.create_certificate ? aws_acm_certificate.this[0].status : "Using existing certificate"
 }
 
 # VPC outputs

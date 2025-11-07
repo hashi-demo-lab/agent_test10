@@ -30,13 +30,26 @@ variable "instance_type" {
   }
 }
 
-variable "certificate_arn" {
-  description = "ARN of ACM certificate for HTTPS listener (must be in same region as deployment)"
+variable "create_certificate" {
+  description = "Whether to create a new ACM certificate (true) or use existing certificate_arn (false)"
+  type        = bool
+  default     = true
+}
+
+variable "domain_name" {
+  description = "Domain name for ACM certificate (e.g., '*.example.com' for wildcard). Required if create_certificate is true."
   type        = string
+  default     = "*.example.com"
+}
+
+variable "certificate_arn" {
+  description = "ARN of existing ACM certificate for HTTPS listener. Required if create_certificate is false. Leave empty to create new certificate."
+  type        = string
+  default     = ""
 
   validation {
-    condition     = can(regex("^arn:aws:acm:", var.certificate_arn))
-    error_message = "Certificate ARN must be a valid ACM certificate ARN starting with 'arn:aws:acm:'."
+    condition     = var.certificate_arn == "" || can(regex("^arn:aws:acm:", var.certificate_arn))
+    error_message = "Certificate ARN must be empty or a valid ACM certificate ARN starting with 'arn:aws:acm:'."
   }
 }
 

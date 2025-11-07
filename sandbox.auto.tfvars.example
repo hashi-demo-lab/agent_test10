@@ -10,9 +10,25 @@ environment = "development"
 # EC2 Instance Configuration
 instance_type = "t3.micro" # Or "t4g.micro" for 20% cost savings with Graviton
 
-# ACM Certificate ARN (REQUIRED - Replace with your certificate ARN)
-# Create certificate via: aws acm request-certificate --domain-name "*.example.com" --validation-method DNS --region ap-southeast-2
-certificate_arn = "arn:aws:acm:ap-southeast-2:ACCOUNT_ID:certificate/CERTIFICATE_ID"
+# =============================================================================
+# ACM Certificate Configuration
+# =============================================================================
+
+# Option 1: Create a new ACM certificate via Terraform (Recommended for testing)
+create_certificate = true
+domain_name        = "*.example.com" # Change to your domain or keep for testing
+
+# Option 2: Use an existing ACM certificate
+# create_certificate = false
+# certificate_arn    = "arn:aws:acm:ap-southeast-2:ACCOUNT_ID:certificate/CERTIFICATE_ID"
+
+# Note: If create_certificate = true, Terraform will output DNS validation records.
+# You must add these records to your DNS provider to complete certificate validation.
+# The ALB will not work until the certificate is in ISSUED status.
+
+# =============================================================================
+# Infrastructure Configuration
+# =============================================================================
 
 # Availability Zones for Multi-AZ Deployment
 availability_zones = ["ap-southeast-2a", "ap-southeast-2b"]

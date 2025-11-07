@@ -32,6 +32,34 @@ data "aws_ami" "amazon_linux_2023" {
 }
 
 # =============================================================================
+# ACM Certificate - SSL/TLS certificate for HTTPS
+# =============================================================================
+
+resource "aws_acm_certificate" "this" {
+  count = var.create_certificate ? 1 : 0
+
+  domain_name       = var.domain_name
+  validation_method = "DNS"
+
+  lifecycle {
+    create_before_destroy = true
+  }
+
+  tags = merge(
+    local.common_tags,
+    {
+      Name = "${var.environment}-acm-certificate"
+    }
+  )
+}
+
+# Output DNS validation records for manual DNS configuration
+# Note: Automated DNS validation requires Route53 hosted zone
+locals {
+  certificate_arn = var.create_certificate ? aws_acm_certificate.this[0].arn : var.certificate_arn
+}
+
+# =============================================================================
 # Security Groups - Defense-in-depth architecture
 # =============================================================================
 
@@ -208,7 +236,7 @@ module "alb" {
     https = {
       port            = 443
       protocol        = "HTTPS"
-      certificate_arn = var.certificate_arn
+      certificate_arn = local.certificate_arn
       ssl_policy      = "ELBSecurityPolicy-TLS13-1-2-2021-06" # TLS 1.2/1.3 only
 
       forward = {
